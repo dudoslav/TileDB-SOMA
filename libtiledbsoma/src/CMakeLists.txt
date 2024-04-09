@@ -15,6 +15,7 @@ set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} $ENV{TILEDBSOMA_COVERAGE}")
 # ###########################################################
 find_package(TileDB_EP REQUIRED)
 find_package(Spdlog_EP REQUIRED)
+find_package(Nanoarrow_EP REQUIRED)
 
 # ###########################################################
 # Get source commit hash
@@ -49,9 +50,6 @@ message(STATUS "Building with commit hash ${BUILD_COMMIT_HASH}")
 # ###########################################################
 # Common object library
 # ###########################################################
-set_source_files_properties(
-  ${CMAKE_CURRENT_SOURCE_DIR}/external/src/nanoarrow/nanoarrow.c PROPERTIES LANGUAGE CXX)
-
 add_library(TILEDB_SOMA_OBJECTS OBJECT
   ${CMAKE_CURRENT_SOURCE_DIR}/reindexer/reindexer.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/soma/managed_query.cc
@@ -75,7 +73,6 @@ add_library(TILEDB_SOMA_OBJECTS OBJECT
 
   ${CMAKE_CURRENT_SOURCE_DIR}/external/src/thread_pool/thread_pool.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/external/src/thread_pool/status.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/external/src/nanoarrow/nanoarrow.c
 )
 
 message(STATUS "Building TileDB without deprecation warnings")
@@ -89,11 +86,6 @@ target_compile_options(
 )
 
 set_property(TARGET TILEDB_SOMA_OBJECTS PROPERTY POSITION_INDEPENDENT_CODE ON)
-
-target_include_directories(TILEDB_SOMA_OBJECTS
-  PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/external/include/nanoarrow
-)
 
 target_include_directories(TILEDB_SOMA_OBJECTS
   PRIVATE
@@ -164,6 +156,7 @@ else()
     PUBLIC
     TileDB::tiledb_shared
     spdlog::spdlog
+    nanoarrow
   )
 endif()
 
@@ -239,12 +232,6 @@ install(FILES
 install(FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/external/include/span/span.hpp
   DESTINATION "include/tiledbsoma/soma/span"
-)
-
-install(FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/external/include/nanoarrow/nanoarrow.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/external/include/nanoarrow/nanoarrow.hpp
-  DESTINATION "include/tiledbsoma/nanoarrow"
 )
 
 

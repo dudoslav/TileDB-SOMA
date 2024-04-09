@@ -82,6 +82,7 @@ set(INHERITED_CMAKE_ARGS
 #TBD include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/FindCLI11_EP.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/FindTileDB_EP.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/FindSpdlog_EP.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/FindNanoarrow_EP.cmake)
 
 ############################################################
 # 'make format' target
