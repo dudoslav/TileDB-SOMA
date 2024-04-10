@@ -96,6 +96,7 @@ target_include_directories(TILEDB_SOMA_OBJECTS
   ${CMAKE_CURRENT_SOURCE_DIR}/external/include
   $<TARGET_PROPERTY:TileDB::tiledb_shared,INTERFACE_INCLUDE_DIRECTORIES>
   $<TARGET_PROPERTY:spdlog::spdlog,INTERFACE_INCLUDE_DIRECTORIES>
+  $<TARGET_PROPERTY:nanoarrow::nanoarrow,INTERFACE_INCLUDE_DIRECTORIES>
   ${pybind11_INCLUDE_DIRS}
 )
 
@@ -156,7 +157,7 @@ else()
     PUBLIC
     TileDB::tiledb_shared
     spdlog::spdlog
-    nanoarrow
+    nanoarrow::nanoarrow
   )
 endif()
 
@@ -310,6 +311,7 @@ if(TILEDBSOMA_BUILD_CLI)
     ${CMAKE_CURRENT_SOURCE_DIR}/external/khash
     ${TILEDB_SOMA_EXPORT_HEADER_DIR}
     ${pybind11_INCLUDE_DIRS}
+    $<TARGET_PROPERTY:nanoarrow::nanoarrow,INTERFACE_INCLUDE_DIRECTORIES>
   )
 endif()
 

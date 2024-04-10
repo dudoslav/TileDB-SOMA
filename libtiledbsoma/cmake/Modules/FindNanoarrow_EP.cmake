@@ -27,14 +27,12 @@
 Include(FetchContent)
 
 FetchContent_Declare(
-        nanoarrow-project
+        nanoarrow
         URL "https://github.com/apache/arrow-nanoarrow/releases/download/apache-arrow-nanoarrow-0.4.0/apache-arrow-nanoarrow-0.4.0.tar.gz"
-        # GIT_TAG        v3.4.0
 )
 
-# FetchContent_MakeAvailable(nanoarrow-project)
-FetchContent_GetProperties(nanoarrow-project)
-if(NOT nanoarrow_POPULATED)
-    FetchContent_Populate(nanoarrow-project)
-    add_subdirectory(${nanoarrow_SOURCE_DIR} ${nanoarrow_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
+FetchContent_MakeAvailable(nanoarrow)
+
+add_library(nanoarrow::nanoarrow ALIAS nanoarrow)
+
+install(TARGETS nanoarrow EXPORT "TileDBSomaTargets")

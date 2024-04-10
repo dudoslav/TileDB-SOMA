@@ -44,6 +44,8 @@ target_link_libraries(unit_soma
   PRIVATE
     Catch2::Catch2WithMain
     TileDB::tiledb_shared
+    nanoarrow::nanoarrow
+    spdlog::spdlog
 )
 
 target_include_directories(unit_soma
@@ -53,6 +55,7 @@ target_include_directories(unit_soma
     ${pybind11_INCLUDE_DIRS}
     ${TILEDB_SOMA_EXPORT_HEADER_DIR}
     $<TARGET_PROPERTY:spdlog::spdlog,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:nanoarrow::nanoarrow,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
 target_compile_definitions(unit_soma PRIVATE CATCH_CONFIG_MAIN)
