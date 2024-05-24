@@ -84,7 +84,7 @@ jobs:
           python -c 'from distutils import util; print("distutil.util.get_platform:", util.get_platform())'
           python -c 'import platform; print("platform.platform()", platform.platform())'
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.11.3
+        uses: pypa/cibuildwheel@v2.18.1
         with:
           package-dir: tiledbsoma.tar.gz
         env:
@@ -115,25 +115,25 @@ jobs:
       # tiledbsoma-VERSIONHERE-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       # tiledbsoma-VERSIONHERE-cp311-cp311-macosx_14_0_x86_64.whl
       # tiledbsoma-VERSIONHERE-cp311-cp311-macosx_14_0_arm64.whl
-      - name: MacOS portability step
-        run: |
-          pwd
-          ls -l
-          cd wheelhouse
-          ls -l
-          for wheel_file_name in *.whl; do
-            if expr "$wheel_file_name" : ".*macosx_11_0.*"; then
-              new_name=$(echo $wheel_file_name | sed "s/macosx_11_0/macosx_10_9/")
-              if [ "$wheel_file_name" = "$new_name" ]; then
-                echo "Failed to rename $wheel_file_name"
-                exit 1
-              fi
-              echo Renaming $wheel_file_name to $new_name
-              mv $wheel_file_name $new_name
-            fi
-          done
-          cd ..
-          echo
+      # - name: MacOS portability step
+      #   run: |
+      #     pwd
+      #     ls -l
+      #     cd wheelhouse
+      #     ls -l
+      #     for wheel_file_name in *.whl; do
+      #       if expr "$wheel_file_name" : ".*macosx_11_0.*"; then
+      #         new_name=$(echo $wheel_file_name | sed "s/macosx_11_0/macosx_10_9/")
+      #         if [ "$wheel_file_name" = "$new_name" ]; then
+      #           echo "Failed to rename $wheel_file_name"
+      #           exit 1
+      #         fi
+      #         echo Renaming $wheel_file_name to $new_name
+      #         mv $wheel_file_name $new_name
+      #       fi
+      #     done
+      #     cd ..
+      #     echo
       - name: Upload wheels-${{ matrix.wheel_name }} to GitHub Actions storage
         uses: actions/upload-artifact@v3
         with:
@@ -208,63 +208,63 @@ jobs:
           "
 
   # Publish to TestPyPI upon user workflow request
-  publish-to-test-pypi:
-    name: Publish package to TestPyPI
-    needs: smoke-test
-    runs-on: ubuntu-20.04
-    if: github.event_name == 'workflow_dispatch'
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-      - name: Create dist
-        run: |
-          set -x
-          mkdir dist
-          cp sdist/tiledbsoma-*.tar.gz wheels-*/*.whl dist
-          ls -l dist
-      - name: Publish packages to TestPyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        continue-on-error: true
-        with:
-          password: ${{ secrets.TEST_PYPI_TOKEN }}
-          repository-url: https://test.pypi.org/legacy/
-          packages_dir: dist
-          verbose: true
+  # publish-to-test-pypi:
+  #   name: Publish package to TestPyPI
+  #   needs: smoke-test
+  #   runs-on: ubuntu-20.04
+  #   if: github.event_name == 'workflow_dispatch'
+  #   steps:
+  #     - name: Download artifacts
+  #       uses: actions/download-artifact@v3
+  #     - name: Create dist
+  #       run: |
+  #         set -x
+  #         mkdir dist
+  #         cp sdist/tiledbsoma-*.tar.gz wheels-*/*.whl dist
+  #         ls -l dist
+  #     - name: Publish packages to TestPyPI
+  #       uses: pypa/gh-action-pypi-publish@release/v1
+  #       continue-on-error: true
+  #       with:
+  #         password: ${{ secrets.TEST_PYPI_TOKEN }}
+  #         repository-url: https://test.pypi.org/legacy/
+  #         packages_dir: dist
+  #         verbose: true
 
   # Publish to PyPI upon release.
-  publish-to-pypi:
-    name: Publish package to PyPI
-    needs: smoke-test
-    runs-on: ubuntu-20.04
-    if: github.event_name == 'release'
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-      - name: Create dist
-        run: |
-          set -x
-          mkdir dist
-          cp sdist/tiledbsoma-*.tar.gz wheels-*/*.whl dist
-          ls -l dist
-      - name: Publish packages to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_TOKEN }}
-          packages_dir: dist
-          verbose: true
-
-  # File a bug report if anything fails, but don't file tickets for manual runs
-  # -- only for scheduled ones.
-  create_issue_on_fail:
-    runs-on: ubuntu-latest
-    needs: [smoke-test, publish-to-test-pypi, publish-to-pypi]
-    if: (failure() || cancelled()) && github.event_name != 'workflow_dispatch'
-    steps:
-      - name: Checkout TileDB-SOMA `main`
-        uses: actions/checkout@v2
-      - name: Create Issue if Build Fails
-        uses: JasonEtco/create-an-issue@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          filename: .github/workflows/daily-test-build-issue-template.md
+  # publish-to-pypi:
+  #   name: Publish package to PyPI
+  #   needs: smoke-test
+  #   runs-on: ubuntu-20.04
+  #   if: github.event_name == 'release'
+  #   steps:
+  #     - name: Download artifacts
+  #       uses: actions/download-artifact@v3
+  #     - name: Create dist
+  #       run: |
+  #         set -x
+  #         mkdir dist
+  #         cp sdist/tiledbsoma-*.tar.gz wheels-*/*.whl dist
+  #         ls -l dist
+  #     - name: Publish packages to PyPI
+  #       uses: pypa/gh-action-pypi-publish@release/v1
+  #       with:
+  #         password: ${{ secrets.PYPI_TOKEN }}
+  #         packages_dir: dist
+  #         verbose: true
+  #
+  # # File a bug report if anything fails, but don't file tickets for manual runs
+  # # -- only for scheduled ones.
+  # create_issue_on_fail:
+  #   runs-on: ubuntu-latest
+  #   needs: [smoke-test, publish-to-test-pypi, publish-to-pypi]
+  #   if: (failure() || cancelled()) && github.event_name != 'workflow_dispatch'
+  #   steps:
+  #     - name: Checkout TileDB-SOMA `main`
+  #       uses: actions/checkout@v2
+  #     - name: Create Issue if Build Fails
+  #       uses: JasonEtco/create-an-issue@v2
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         filename: .github/workflows/daily-test-build-issue-template.md
